@@ -33,7 +33,7 @@ import {
 
 const ManagerInterface: string = `<node>
   <interface name="org.freedesktop.login1.Manager">
-    <method name="SetRebootToFirmwareSetup">
+    <method name="SetRebootToWindows">
       <arg type="b" direction="in"/>
     </method>
     <method name="Reboot">
@@ -43,10 +43,10 @@ const ManagerInterface: string = `<node>
 </node>`;
 const Manager = Gio.DBusProxy.makeProxyWrapper(ManagerInterface);
 
-export default class RebootToUefiExtension extends Extension {
+export default class RebootToWindowsExtension extends Extension {
   private menu: any;
   private proxy!: any | null;
-  private rebootToUefiItem!: PopupMenu.PopupMenuItem | null;
+  private rebootToWindowsItem!: PopupMenu.PopupMenuItem | null;
   private counter!: number;
   private seconds!: number;
   private counterIntervalId!: GLib.Source;
@@ -67,11 +67,11 @@ export default class RebootToUefiExtension extends Extension {
       '/org/freedesktop/login1',
     );
 
-    this.rebootToUefiItem = new PopupMenu.PopupMenuItem(
-      `${_('Restart to UEFI')}...`,
+    this.rebootToWindowsItem = new PopupMenu.PopupMenuItem(
+      `${_('Restart to Windows')}...`,
     );
 
-    this.rebootToUefiItem.connect('activate', () => {
+    this.rebootToWindowsItem.connect('activate', () => {
       this.counter = 60;
       this.seconds = this.counter;
 
@@ -91,7 +91,7 @@ export default class RebootToUefiExtension extends Extension {
       }, 1000);
     });
 
-    this.menu.addMenuItem(this.rebootToUefiItem, 2);
+    this.menu.addMenuItem(this.rebootToWindowsItem, 2);
   }
 
   private queueModifySystemItem(): void {
@@ -113,8 +113,8 @@ export default class RebootToUefiExtension extends Extension {
 
   disable() {
     this.clearIntervals();
-    this.rebootToUefiItem?.destroy();
-    this.rebootToUefiItem = null;
+    this.rebootToWindowsItem?.destroy();
+    this.rebootToWindowsItem = null;
     this.proxy = null;
     if (this.sourceId) {
       GLib.Source.remove(this.sourceId);
@@ -123,8 +123,7 @@ export default class RebootToUefiExtension extends Extension {
   }
 
   private reboot(): void {
-    this.proxy?.SetRebootToFirmwareSetupRemote(true);
-    this.proxy?.RebootRemote(false);
+    GLib.spawn_command_line_async(%command%);
   }
 
   private buildDialog(): ModalDialog.ModalDialog {
@@ -150,7 +149,7 @@ export default class RebootToUefiExtension extends Extension {
     ]);
 
     const dialogTitle = new St.Label({
-      text: _('Restart to UEFI'),
+      text: _('Restart to Windows'),
       // style_class: 'dialog-title' // TODO investigate why css classes are not working
       style: 'font-weight: bold;font-size:18px',
     });

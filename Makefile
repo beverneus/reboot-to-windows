@@ -1,5 +1,5 @@
-NAME=reboottouefi
-DOMAIN=ubaygd.com
+NAME=reboottowindows
+DOMAIN=beverneus
 
 .PHONY: all pack install clean
 
@@ -10,6 +10,7 @@ node_modules: package.json
 
 dist/extension.js: node_modules
 	@ ./node_modules/typescript/bin/tsc
+	@ sed -i 's|%COMMAND%|$(COMMAND)|g' dist/extension.js
 
 compile-po: po/*.po
 	@for file in po/*.po; do \
