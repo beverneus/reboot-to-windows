@@ -2,8 +2,6 @@
 
 This is a small Gnome extension that adds the ability to reboot directly to Windows.
 
-<br>
-
 ### Build and install the extension
 
 Requirements:
@@ -39,6 +37,7 @@ int main() {
 }
 ``` 
 Compiled using gcc.
+
 You can find out what Bootnumber Windows has using
 ```
 sudo efibootmgr
